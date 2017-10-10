@@ -60,13 +60,33 @@ define([
 		return true;
 	}
 
-    function getCurrentDataSource() {
-		if (currentPage && currentPage.username) {
-			return dataSource.getDataSource(currentPage.username, currentPage.sitename);
+    function getCurrentDataSource(username, sitename) {
+		username = username || currentPage.username;
+		sitename = sitename || currentPage.sitename;
+		var curSite = getSite(username, sitename);
+		if (curSite && curSite.site_data_source_id) {
+			return dataSource.getDataSourceById(curSite.site_data_source_id);	
+		}
+
+		if (username) {
+			return dataSource.getDataSource(username, sitename);
 		}
 
 		return dataSource.getDefaultDataSource()
     }
+
+	function getDataSource(username, sitename) {
+		var curSite = getSite(username, sitename);
+		if (curSite && curSite.site_data_source_id) {
+			return dataSource.getDataSourceById(curSite.site_data_source_id);	
+		}
+
+		if (username) {
+			return dataSource.getDataSource(username, sitename);
+		}
+
+		return dataSource.getDefaultDataSource()
+	}
 
 	function setSite(siteinfo) {
 		var key = siteinfo.username + "_" + siteinfo.name;
@@ -926,7 +946,7 @@ define([
             // 获取站k点文件列表
             function getSitePageList(params, cb, errcb) {//{{{
 				//console.log(params);
-                var currentDataSource = dataSource.getDataSource(params.username, params.sitename);
+                var currentDataSource = getDataSource(params.username, params.sitename);
                 if (!currentDataSource) {
                     console.log("current data source unset!!!");
                     return;
@@ -1176,7 +1196,7 @@ define([
                     //console.log(allWebstePageContent[url]);
                     cb && cb(allWebstePageContent[url]);
                 } else {
-                    var currentDataSource = dataSource.getDataSource(page.username, page.sitename);
+                    var currentDataSource = getDataSource(page.username, page.sitename);
                     //console.log(currentDataSource);
                     if (currentDataSource) {
                         currentDataSource.getRawContent({path: url + pageSuffixName}, function (data) {
@@ -1501,7 +1521,7 @@ define([
                     "content": "确定删除 " + page.pagename + " 页面？"
                 },function () {
 				    if (!isEmptyObject(page)) {
-                        var currentDataSource = dataSource.getDataSource(page.username, page.sitename);
+                        var currentDataSource = getDataSource(page.username, page.sitename);
 
                         currentDataSource && currentDataSource.deleteFile({path: page.url + pageSuffixName}, function () {
                             console.log("删除文件成功:");
@@ -1617,7 +1637,7 @@ define([
 				if (!page) {
 					return ;
 				}
-				var siteDataSource = dataSource.getDataSource(page.username, page.sitename);
+				var siteDataSource = getDataSource(page.username, page.sitename);
 				if (!siteDataSource){
 					return ;
 				}
@@ -1654,7 +1674,7 @@ define([
 					scope: $scope
 				}).result.then(function (websiteFile) {
                     var path = websiteFile.url + config.pageSuffixName;
-                    var currentDataSource = dataSource.getDataSource(websiteFile.username, websiteFile.sitename);
+                    var currentDataSource = getDataSource(websiteFile.username, websiteFile.sitename);
                     if (!currentDataSource) {
                         console.log(websiteFile);
                     } else {

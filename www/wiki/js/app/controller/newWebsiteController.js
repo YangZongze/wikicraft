@@ -6,10 +6,11 @@ define([
     'app',
     'helper/util',
     'helper/storage',
+    'helper/dataSource',
     'markdown-it',
     'text!html/newWebsite.html',
     'controller/editWebsiteController',
-], function (app, util, storage, markdownit, htmlContent, editWebsiteHtmlContent) {
+], function (app, util, storage, dataSource, markdownit, htmlContent, editWebsiteHtmlContent) {
     var controller = ['$rootScope','$scope', '$sce', 'Account', 'Message', function ($rootScope, $scope, $sce, Account, Message) {
         const GITLAB = {
             "API_BASE_URL": "http://git.keepwork.com/api/v4",

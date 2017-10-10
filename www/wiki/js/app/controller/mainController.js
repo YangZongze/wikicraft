@@ -254,6 +254,9 @@ define([
 							}
 							userDataSource.registerInitFinishCallback(function () {
 								var currentDataSource = dataSource.getDataSource($rootScope.pageinfo.username, $rootScope.pageinfo.sitename);
+								if ($scope.siteinfo.site_data_source_id) {
+									currentDataSource = dataSource.getDataSourceById($scope.siteinfo.site_data_source_id);
+								}
 								var renderContent = function (content) {
 									$rootScope.$broadcast('userpageLoaded',{});
 									content = (content!=undefined) ? md.render(content) : notfoundHtmlContent;

@@ -72,6 +72,9 @@ define([
                     return;
                 }
                 self.registerDataSource(dataSourceCfg.sitename, dataSourceInstance);
+				if (dataSourceCfg._id) {
+					dataSource.registerDataSourceById(dataSourceCfg._id, dataSourceInstance);
+				}
                 dataSourceInstance.init(dataSourceCfg, function () {
                     console.log(dataSourceCfg.dataSourceName + " data source init success");
                     initFinish(i);
@@ -125,7 +128,7 @@ define([
 		}
     };
 
-    dataSource = {
+    var dataSource = {
         // 默认用户
         defaultUsername:undefined,
         // 数据示例构造器
@@ -138,10 +141,22 @@ define([
         currentDataSource:undefined,
     };
 
+	// 检测是用， 应废弃此行
+	window.dataSource = dataSource;
+
 	function getDataSourceKey(username, sitename) {
 		return username + "_" + sitename;
 	}
-    dataSource.registerDataSourceFactory = function (typ, factory) {
+    
+	function getDataSourceIdKey(id) {
+		return "__" + id + "__";
+	}
+
+	dataSource.registerDataSourceById = function(id, inst) {
+		this.dataSourceMap[getDataSourceIdKey(id)] = inst;
+	}
+
+	dataSource.registerDataSourceFactory = function (typ, factory) {
         dataSource.dataSourceFactory[typ] = factory;
     };
 
@@ -153,7 +168,6 @@ define([
 		var inst = this.getDataSourceInstance(dataSourceCfg.type);
 		this.dataSourceMap[getDataSourceKey(dataSourceCfg.username,dataSourceCfg.sitename)] = inst;
 		inst.init(dataSourceCfg, cb, errcb);
-		
 	}
 
     dataSource.getUserDataSource = function (name) {
@@ -171,6 +185,10 @@ define([
 		}
 		//console.log(dataSource.dataSourceUserMap);
 		return this.getUserDataSource(username).getDataSourceBySitename(sitename)
+	}
+
+	dataSource.getDataSourceById = function(id) {
+		return this.dataSourceMap[getDataSourceIdKey(id)];	
 	}
 
     dataSource.setDefaultUsername = function (username) {
