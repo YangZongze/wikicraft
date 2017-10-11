@@ -28,6 +28,13 @@ define([
         $scope.website = siteinfo;
         $scope.tags=$scope.website.tags ? $scope.website.tags.split('|') : [];
 
+		function getDataSource(siteinfo) {
+			if (siteinfo.site_data_source_id) {
+				return dataSource.getDataSourceById(siteinfo.site_data_source_id);	
+			}
+			return dataSource.getDataSource(username, sitename);
+		}
+
         function sendModifyWebsiteRequest() {
             console.log("33333333");
 			$scope.website.sitename = $scope.website.name;
@@ -136,7 +143,7 @@ define([
 		}
 
 		function getGroupList() {
-			var siteDataSource = dataSource.getDataSource(siteinfo.username, siteinfo.name);
+			var siteDataSource = getDataSource(siteinfo);
 			if (!siteDataSource) {
 				return;
 			}
@@ -258,7 +265,7 @@ define([
                 "confirmBtnClass": "btn-danger",
                 "content": "确定删除 " + group.name + " 分组？"
             },function () {
-                var siteDataSource = dataSource.getDataSource(siteinfo.username, siteinfo.name);
+                var siteDataSource = getDataSource(siteinfo);
                 if (!siteDataSource) {
                     Message.info("数据源不存在");
                     return;
@@ -398,7 +405,7 @@ define([
         $scope.addUser = function () {
 			var group = $scope.nowGroup;
 			var groupUser = $scope.groupUser;
-			var siteDataSource = dataSource.getDataSource(siteinfo.username, siteinfo.name);
+			var siteDataSource = getDataSource(siteinfo);
 
 			if (!siteDataSource || !group.id || !groupUser.name) {
 				return;
@@ -471,7 +478,7 @@ define([
 		}
 
         function init() {
-			siteDataSource = dataSource.getDataSource(siteinfo.username, siteinfo.name);
+			siteDataSource = getDataSource(siteinfo);
 			initGroup();
 			$scope.dataSourceName = siteDataSource.dataSource.dataSourceName;
 			//console.log($scope.dataSourceName);
