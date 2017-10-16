@@ -167,6 +167,7 @@ define([
 	dataSource.registerDataSource = function(dataSourceCfg, cb, errcb) {
 		var inst = this.getDataSourceInstance(dataSourceCfg.type);
 		this.dataSourceMap[getDataSourceKey(dataSourceCfg.username,dataSourceCfg.sitename)] = inst;
+		this.dataSourceMap[getDataSourceIdKey(dataSourceCfg._id)] = inst;
 		inst.init(dataSourceCfg, cb, errcb);
 	}
 
