@@ -34,8 +34,7 @@ define([
         'modal',
         'gitlab',
         'confirmDialog',
-        'sensitiveTest',
-        function ($scope, $rootScope, $sce, $location, $anchorScroll, $http, $auth, $compile, Account, Message, github, modal, gitlab, confirmDialog, sensitiveTest) {
+        function ($scope, $rootScope, $sce, $location, $anchorScroll, $http, $auth, $compile, Account, Message, github, modal, gitlab, confirmDialog) {
             //console.log("mainController");
             
             // 初始化基本信息
@@ -59,7 +58,6 @@ define([
                     dataSource:dataSource,
                     loading:loading,
                     confirmDialog:confirmDialog,
-                    sensitiveTest: sensitiveTest
                 };
 
                 util.setAngularServices({
@@ -102,25 +100,33 @@ define([
                 }
 
                 $rootScope.getImageUrl = function(imgUrl,imgsPath) {
+					var bustVersion = config.bustVersion;
+					if (imgUrl.indexOf("?bust=") > 0 || imgUrl.indexOf("?ver=") > 0) {
+						bustVersion = "";
+					}
                     if (imgUrl.indexOf("://") >= 0) {
                         return imgUrl;
                     }
                     if (imgUrl.indexOf("/wiki/") >= 0) {
-                        return imgUrl + "?bust=" + config.bustVersion;
+                        return imgUrl + "?bust=" + bustVersion;
                     }
 
-                    return (imgsPath || $rootScope.imgsPath) + imgUrl + "?bust=" + config.bustVersion;
+                    return (imgsPath || $rootScope.imgsPath) + imgUrl + "?bust=" + bustVersion;
                 }
 
                 $rootScope.getCssUrl = function(cssUrl, cssPath) {
+					var bustVersion = config.bustVersion;
+					if (cssUrl.indexOf("?bust=") > 0 || cssUrl.indexOf("?ver=") > 0) {
+						bustVersion = "";
+					}
                     if (cssUrl.indexOf("://") >= 0) {
                         return cssUrl;
                     }
                     if (cssUrl.indexOf("/wiki/") >= 0) {
-                        return cssUrl + "?bust=" + config.bustVersion;
+                        return cssUrl + "?bust=" + bustVersion;
                     }
 
-                    return (cssPath || $rootScope.cssPath) + cssUrl + "?bust=" + config.bustVersion;
+                    return (cssPath || $rootScope.cssPath) + cssUrl + "?bust=" + bustVersion;
                 }
                 
                 $rootScope.getRenderText = function (text) {
@@ -250,14 +256,14 @@ define([
                         $rootScope.tplinfo = {username:urlObj.username,sitename:urlObj.sitename, pagename:"_theme"};
 
                         var userDataSource = dataSource.getUserDataSource(data.userinfo.username);
-                        var filterSensitive = function (inputText) {
-                            var result = "";
-                            config.services.sensitiveTest.checkSensitiveWord(inputText, function (foundWords, outputText) {
-                                result = outputText;
-                                return inputText;
-                            });
-                            return result;
-                        };
+                        //var filterSensitive = function (inputText) {
+                            //var result = "";
+                            //config.services.sensitiveTest.checkSensitiveWord(inputText, function (foundWords, outputText) {
+                                //result = outputText;
+                                //return inputText;
+                            //});
+                            //return result;
+                        //};
 						var callback = function() {
 							if (!$scope.user || $scope.user.username != data.userinfo.username) {
 								userDataSource.init(data.userinfo.dataSource, data.userinfo.defaultDataSourceSitename);
@@ -269,8 +275,10 @@ define([
 								}
 								var renderContent = function (content) {
 									$rootScope.$broadcast('userpageLoaded',{});
-									// console.log(content);
-									content = (content!=undefined) ? md.render(filterSensitive(content)) : notfoundHtmlContent;
+                                    if (content && (data.siteinfo.sensitiveWordLevel & 1) <= 0){
+                                        //content = filterSensitive(content) || content;
+                                    }
+									content = (content!=undefined) ? md.render(content) : notfoundHtmlContent;
 									util.html('#__UserSitePageContent__', content, $scope);
 									//config.loading.hideLoading();
 								};

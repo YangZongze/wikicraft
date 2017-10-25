@@ -10,6 +10,7 @@
     optimizeCss: 'standard',
     removeCombined:true,
     optimizeAllPluginResources: true,  // text 插件配置
+	skipDirOptimize: true,
     modules:[
         {
             name:'main',
@@ -61,7 +62,8 @@
         'satellizer': 'lib/satellizer/satellizer.min',
         'bootstrap-treeview': 'lib/bootstrap-treeview/bootstrap-treeview.min',
         //'github-api': 'lib/github-api/GitHub.bundle.min',
-        'cropper': 'lib/cropper/cropper.min',
+        //'cropper': 'lib/cropper/cropper.min',
+        'cropper': 'empty:',
         'markdown-it':'lib/markdown-it/markdown-it.min',
         'highlight': 'lib/highlight/highlight.pack', 
         'js-base64': 'lib/js-base64/base64.min',
@@ -75,6 +77,8 @@
 		'pingpp': 'lib/pingpp-js/dist/pingpp',
 		'plupload': "lib/qiniu/plupload.full.min",
 		'qiniu': "lib/qiniu/qiniu.min",
+        'js-aho-corasick': "lib/js-aho-corasick/aho-corasick",
+        'md5': "lib/md5",
 
         // 自定义模块
         'app': 'app',
@@ -88,7 +92,9 @@
         'helper': 'app/helper',
         // html dir
         'html': '../html',
-		'css': '../assets/css'
+		'css': '../assets/css',
+
+		'helper/sensitiveWord':"empty:"
     },
     shim: {
         'angular': {

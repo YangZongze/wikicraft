@@ -28,6 +28,7 @@ include_once(WIKI_ROOT .. "helpers/config.page")
 include_once(WIKI_ROOT .. "helpers/sms.page")
 include_once(WIKI_ROOT .. "helpers/filter.page")
 include_once(WIKI_ROOT .. "helpers/cros.page")
+include_once(WIKI_ROOT .. "helpers/log.page")
 WIKI_ENV="www"
 WIKI_DB_PATH="database/www/"
 
@@ -215,7 +216,7 @@ function getServerUpdateTime()
 end
 
 function load_sensitive_word()
-	local file = ParaIO.open("www/sensitive_word.txt", "r")
+	local file = ParaIO.open(WIKI_ROOT .. "html/sensitive_word.txt", "r")
 	local words = {}
 	if not file then
 		return words
